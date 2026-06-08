@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0d2548">
+<title>HydroMatch — Inscription Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0d2548;--navy-mid:#1a3a6b;--navy-light:#2a5298;
+  --green:#3cb84a;--green-d:#2ea03d;--green-pale:rgba(60,184,74,.1);
+  --gold:#f5a623;--gold-pale:rgba(245,166,35,.12);
+  --white:#fff;--off:#f2f4f7;
+  --border:rgba(13,37,72,.1);
+  --t1:#0d2548;--t2:#5a6a85;--tm:#97a4b5;
+  --red:#e2483a;
+  --r:14px;--rs:8px;--rpill:999px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--t1);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+.hero{width:100%;background:var(--navy);position:relative;overflow:hidden}
+.hero-inner{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 0;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:end}
+.hero-left{padding-bottom:2.5rem}
+.hero-logos{display:flex;align-items:center;gap:14px;margin-bottom:2rem}
+.logo-lgef{height:52px;object-fit:contain}
+.logo-escates{height:40px;object-fit:contain}
+.logo-sep{width:1px;height:44px;background:rgba(255,255,255,.2);flex-shrink:0}
+.hero-brand{display:flex;align-items:center;margin-bottom:.5rem}
+.brand-word{font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;color:var(--green);line-height:1;letter-spacing:-1px;text-transform:uppercase}
+.brand-drop{margin:0 3px;align-self:flex-start;margin-top:7px}
+.brand-drop svg{display:block}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.55);font-weight:300;letter-spacing:.3px;margin-bottom:1.5rem}
+.hero-desc{font-size:14px;line-height:1.7;color:rgba(255,255,255,.65);max-width:420px;padding-left:1rem;border-left:3px solid var(--green)}
+.hero-desc strong{color:#fff;font-weight:500}
+.hero-video-col{display:flex;align-items:flex-end;justify-content:center}
+.video-frame{width:100%;border-radius:16px 16px 0 0;overflow:hidden;background:#000;box-shadow:0 -8px 40px rgba(0,0,0,.35)}
+.video-placeholder{aspect-ratio:16/9;background:rgba(255,255,255,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:background .2s}
+.video-placeholder:hover{background:rgba(255,255,255,.08)}
+.play-btn{width:64px;height:64px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(60,184,74,.4);transition:transform .15s}
+.video-placeholder:hover .play-btn{transform:scale(1.08)}
+.play-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px}
+.video-placeholder span{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.5px}
+.hero-stripe{position:absolute;top:0;right:0;width:4px;height:100%;background:linear-gradient(to bottom,var(--green),transparent)}
+.hero-orb{position:absolute;border-radius:50%;pointer-events:none}
+.hero-orb1{top:-80px;left:-80px;width:300px;height:300px;border:50px solid rgba(255,255,255,.03)}
+.hero-orb2{bottom:-60px;left:40%;width:200px;height:200px;border:35px solid rgba(60,184,74,.05)}
+
+.money-banner{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0d2548 100%);position:relative;overflow:hidden;padding:2.5rem 1.5rem}
+.money-banner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(245,166,35,.03) 20px,rgba(245,166,35,.03) 21px)}
+.money-banner-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.money-top{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;text-align:center}
+.money-badge{background:linear-gradient(135deg,var(--gold),#e8920a);border-radius:var(--rpill);padding:.4rem 1.2rem;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;box-shadow:0 4px 16px rgba(245,166,35,.4)}
+.money-headline{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;line-height:1.05;text-align:center;margin-bottom:.4rem}
+.money-headline .amount{color:var(--gold);text-shadow:0 0 40px rgba(245,166,35,.4)}
+.money-sub{text-align:center;font-size:14px;color:rgba(255,255,255,.55);margin-bottom:2.5rem;font-weight:300}
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;align-items:start}
+.step-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:1.4rem 1.2rem;position:relative;text-align:center;backdrop-filter:blur(4px);transition:transform .2s,background .2s}
+.step-card:hover{transform:translateY(-3px);background:rgba(255,255,255,.09)}
+.step-num{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8920a);font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;box-shadow:0 4px 16px rgba(245,166,35,.4);flex-shrink:0}
+.step-icon{width:40px;height:40px;border-radius:var(--rs);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem}
+.step-icon svg{width:20px;height:20px;fill:none;stroke:rgba(255,255,255,.7);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#fff;letter-spacing:.3px;margin-bottom:.4rem;text-transform:uppercase}
+.step-desc{font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.55}
+.step-tag{display:inline-block;margin-top:.75rem;background:var(--green-pale);border:1px solid rgba(60,184,74,.25);color:var(--green);border-radius:var(--rpill);font-size:11px;font-weight:600;padding:2px 10px;letter-spacing:.5px}
+.step-card.step-last .step-tag{background:var(--gold-pale);border-color:rgba(245,166,35,.3);color:var(--gold)}
+.money-cta{text-align:center;margin-top:2rem}
+.money-cta a{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#e8920a);color:#fff;text-decoration:none;padding:13px 36px;border-radius:var(--rpill);font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;box-shadow:0 4px 20px rgba(245,166,35,.35);transition:transform .15s,box-shadow .15s;animation:pulse 2.5s ease-in-out infinite}
+.money-cta a:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,166,35,.45)}
+.money-cta a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+.body-wrap{max-width:760px;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+.form-stepper{display:flex;align-items:center;margin-bottom:2rem;gap:0}
+.fstep{display:flex;align-items:center;gap:8px;flex:1;cursor:default}
+.fstep-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--tm);flex-shrink:0;transition:all .3s}
+.fstep.active .fstep-dot{background:var(--navy);border-color:var(--navy);color:#fff}
+.fstep.done .fstep-dot{background:var(--green);border-color:var(--green);color:#fff}
+.fstep-dot svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.fstep-label{font-size:11.5px;font-weight:500;color:var(--tm);white-space:nowrap}
+.fstep.active .fstep-label{color:var(--navy);font-weight:600}
+.fstep.done .fstep-label{color:var(--green)}
+.fstep-line{flex:1;height:2px;background:var(--border);transition:background .3s;margin:0 4px}
+.section-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tm);display:flex;align-items:center;gap:8px;margin-bottom:1.25rem}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:1rem;overflow:hidden;transition:box-shadow .2s}
+.form-card:hover{box-shadow:0 6px 28px rgba(13,37,72,.07)}
+.card-header{display:flex;align-items:center;gap:10px;padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:#fafbfc}
+.card-icon{width:32px;height:32px;background:var(--navy);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-icon svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.5px;color:var(--t1);text-transform:uppercase}
+.card-step{margin-left:auto;font-size:11px;color:var(--tm);background:var(--off);padding:2px 10px;border-radius:var(--rpill);border:1px solid var(--border)}
+.card-body{padding:1.4rem}
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1rem}
+.field-row:last-child{margin-bottom:0}
+.field-row .field{margin-bottom:0}
+label.fl{display:block;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px}
+.req{color:var(--red);margin-left:2px}
+input[type=text],input[type=email],input[type=tel],select{width:100%;padding:11px 13px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--t1);background:var(--off);border:1.5px solid transparent;border-radius:var(--rs);outline:none;transition:border-color .18s,background .18s,box-shadow .18s;-webkit-appearance:none;appearance:none}
+input::placeholder{color:var(--tm);font-weight:300}
+input:focus,select:focus{border-color:var(--navy-mid);background:#fff;box-shadow:0 0 0 3px rgba(26,58,107,.1)}
+input.error,select.error{border-color:var(--red)!important;background:#fff9f9}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a85' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-color:var(--off);padding-right:36px;cursor:pointer}
+select:focus{background-color:#fff}
+.sub-label{font-size:10.5px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:1px;padding:.6rem 0;border-bottom:1px dashed rgba(60,184,74,.25);margin-bottom:1rem;display:flex;align-items:center;gap:7px}
+.sub-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sub-div{height:1px;background:var(--border);margin:1.1rem 0}
+.photo-zone{border:2px dashed rgba(13,37,72,.18);border-radius:var(--r);background:var(--off);cursor:pointer;transition:border-color .2s,background .2s;overflow:hidden;position:relative;min-height:160px;display:flex;align-items:center;justify-content:center}
+.photo-zone:hover{border-color:var(--navy-mid);background:rgba(26,58,107,.03)}
+.photo-zone.has-image{border-style:solid;border-color:var(--green)}
+.photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:10px;padding:2rem 1rem;text-align:center;pointer-events:none}
+.ph-icon{width:52px;height:52px;border-radius:50%;background:rgba(13,37,72,.08);display:flex;align-items:center;justify-content:center}
+.ph-icon svg{width:24px;height:24px;fill:none;stroke:var(--navy-mid);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ph-title{font-size:14px;font-weight:500;color:var(--t1)}
+.ph-sub{font-size:12px;color:var(--tm);line-height:1.5}
+.cta-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.pbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--rpill);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;border:1.5px solid;cursor:pointer;transition:all .15s;-webkit-appearance:none}
+.pbtn-cam{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pbtn-cam:hover{background:var(--navy-light);border-color:var(--navy-light)}
+.pbtn-gal{background:transparent;color:var(--navy-mid);border-color:rgba(26,58,107,.3)}
+.pbtn-gal:hover{background:rgba(26,58,107,.05);border-color:var(--navy-mid)}
+.pbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.photo-preview{display:none;position:relative;width:100%}
+.photo-preview img{width:100%;max-height:300px;object-fit:cover;display:block;border-radius:calc(var(--r) - 2px)}
+.prev-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,37,72,.5) 0%,transparent 50%);border-radius:calc(var(--r) - 2px)}
+.prev-actions{position:absolute;bottom:10px;right:10px;display:flex;gap:6px}
+.pact{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;backdrop-filter:blur(4px)}
+.pact:hover{background:#fff}
+.pact svg{width:16px;height:16px;fill:none;stroke:var(--navy);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.field-hint{font-size:11px;color:var(--tm);margin-top:6px}
+input[type=file]{display:none}
+.consent-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1.5rem;display:flex;gap:12px;align-items:flex-start}
+.consent-wrap input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--navy-mid);cursor:pointer;flex-shrink:0}
+.consent-text{font-size:12.5px;color:var(--t2);line-height:1.65;cursor:pointer}
+.consent-text strong{color:var(--t1);font-weight:500}
+.submit-area{text-align:center}
+.submit-btn{display:inline-flex;align-items:center;gap:10px;background:var(--navy);color:#fff;border:none;padding:15px 52px;font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:var(--rpill);cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s;box-shadow:0 4px 20px rgba(13,37,72,.25);width:100%;justify-content:center;-webkit-tap-highlight-color:transparent}
+.submit-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(13,37,72,.32)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.submit-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.submit-note{font-size:12px;color:var(--tm);margin-top:10px}
+.submit-note span{color:var(--red)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:14px 28px;border-radius:var(--rpill);font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.25);z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;pointer-events:none;text-align:center;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+
+/* Success screen */
+.success-screen{display:none;flex-direction:column;align-items:center;text-align:center;padding:3rem 1.5rem}
+.success-icon{width:80px;height:80px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 8px 32px rgba(60,184,74,.3)}
+.success-icon svg{width:40px;height:40px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--navy);margin-bottom:.5rem}
+.success-sub{font-size:15px;color:var(--t2);line-height:1.6;max-width:420px}
+
+.footer{text-align:center;padding:2rem 1rem;font-size:11.5px;color:var(--tm);line-height:1.6;border-top:1px solid var(--border);margin-top:1rem}
+.footer strong{color:var(--t2);font-weight:500}
+.footer-url{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--navy-mid);letter-spacing:.5px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 4px 20px rgba(245,166,35,.35)}50%{box-shadow:0 4px 32px rgba(245,166,35,.6)}}
+.hero-left{animation:fadeUp .6s ease both .05s}
+.hero-video-col{animation:fadeUp .6s ease both .15s}
+
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;padding:2rem 1.25rem 0;gap:1.5rem}
+  .brand-word{font-size:56px}
+  .steps-row{grid-template-columns:1fr;gap:.75rem}
+  .fstep-label{display:none}
+}
+@media(max-width:480px){
+  .brand-word{font-size:46px}
+  .field-row{grid-template-columns:1fr}
+  .body-wrap{padding:2rem .85rem 4rem}
+  .money-headline{font-size:28px}
+  .fstep-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-orb hero-orb1"></div>
+  <div class="hero-orb hero-orb2"></div>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-logos">
+        <img class="logo-lgef" src="https://www.lgef.fff.fr/sites/default/files/styles/logo_federation/public/federation/lgef_logo.png" alt="Ligue Grand Est FFF" onerror="this.style.display='none'">
+        <div class="logo-sep"></div>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--green);letter-spacing:1px">ESCATES</span>
+      </div>
+      <div class="hero-brand">
+        <span class="brand-word">Hydro</span>
+        <span class="brand-drop">
+          <svg width="24" height="32" viewBox="0 0 24 32" fill="none">
+            <path d="M12 1C12 1 1 14 1 20.5a11 11 0 0022 0C23 14 12 1 12 1z" fill="#3cb84a"/>
+          </svg>
+        </span>
+        <span class="brand-word">Match</span>
+      </div>
+      <p class="hero-sub">Formulaire d'inscription &mdash; Saison 2025&ndash;2026</p>
+      <p class="hero-desc">
+        La <strong>Ligue du Grand Est de Football</strong> et <strong>ESCATES</strong> s'associent pour réduire la consommation d'eau dans vos infrastructures sportives grâce à des équipements hydro-économes.
+      </p>
+    </div>
+    <div class="hero-video-col">
+      <div class="video-frame">
+        <div class="video-placeholder" id="heroPH" onclick="playHero()">
+          <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+          <span>Vidéo de présentation HydroMatch</span>
+        </div>
+        <iframe id="heroIframe" src="" allow="autoplay; fullscreen" allowfullscreen style="display:none;width:100%;aspect-ratio:16/9;border:0"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MONEY BANNER -->
+<div class="money-banner">
+  <div class="money-banner-inner">
+    <div style="text-align:center;margin-bottom:1.25rem">
+      <span class="money-badge">★ Offre exclusive clubs</span>
+    </div>
+    <div class="money-headline">Empochez <span class="amount">300&nbsp;€</span><br>en 3&nbsp;étapes simples</div>
+    <p class="money-sub">Installez les équipements ESCATES — votre club est récompensé</p>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="step-title">Inscrivez votre club</div>
+        <div class="step-desc">Remplissez ce formulaire en moins de 3&nbsp;minutes.</div>
+        <span class="step-tag">Ce formulaire</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="step-title">Accueillez l'installation</div>
+        <div class="step-desc">Un technicien ESCATES installe les accessoires hydro-économes.</div>
+        <span class="step-tag">Prise en charge totale</span>
+      </div>
+      <div class="step-card step-last">
+        <div class="step-num">3</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <div class="step-title">Touchez votre prime</div>
+        <div class="step-desc">Après validation, <strong style="color:var(--gold)">300&nbsp;€</strong> versés sur le compte du club.</div>
+        <span class="step-tag">300 € garantis</span>
+      </div>
+    </div>
+    <div class="money-cta">
+      <a href="#inscription">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        Je m'inscris maintenant
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="body-wrap" id="inscription">
+
+  <div class="form-stepper" id="stepper">
+    <div class="fstep active" id="fs1"><div class="fstep-dot">1</div><span class="fstep-label">Identité</span></div>
+    <div class="fstep-line"></div>
+    <div class="fstep" id="fs2"><div class="fstep-dot">2</div><span class="fstep-label">Contacts</span></div>
+    <div class="fstep-line"></div>
+    <div class="fstep" id="fs3"><div class="fstep-dot">3</div><span class="fstep-label">Photo</span></div>
+  </div>
+
+  <!-- SUCCESS SCREEN (hidden by default) -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="success-title">Inscription envoyée !</div>
+    <p class="success-sub">Merci, votre dossier a bien été reçu. L'équipe HydroMatch vous contactera dans les prochains jours.</p>
+  </div>
+
+  <form id="mainForm" novalidate>
+
+    <div class="section-label">① Identité du club</div>
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <span class="card-title">Votre club</span>
+        <span class="card-step">1 / 3</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="fl" for="club-nom">Nom du club<span class="req">*</span></label>
+          <input id="club-nom" type="text" placeholder="Ex : FC Strasbourg Olympique" required autocomplete="organization">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="fl" for="affiliation">N° d'affiliation<span class="req">*</span></label>
+            <input id="affiliation" type="text" placeholder="Ex : 067000000" inputmode="numeric" required>
+          </div>
+          <div class="field">
+            <label class="fl" for="district">District<span class="req">*</span></label>
+            <select id="district" required>
+              <option value="">— Sélectionner —</option>
+              <option>Alsace</option><option>Ardennes</option><option>Aube</option>
+              <option>Haute-Marne</option><option>Marne</option>
+              <option>Meurthe-et-Moselle</option><option>Meuse</option>
+              <option>Moselle</option><option>Vosges</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">② Correspondants</div>
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div>
+        <span class="card-title">Contacts</span>
+        <span class="card-step">2 / 3</span>
+      </div>
+      <div class="card-body">
+        <div class="sub-label">Référent du club</div>
+        <div class="field">
+          <label class="fl" for="ref-nom">Nom et prénom<span class="req">*</span></label>
+          <input id="ref-nom" type="text" placeholder="Ex : Jean Dupont" required autocomplete="name">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="fl" for="ref-email">E-mail<span class="req">*</span></label>
+            <input id="ref-email" type="email" placeholder="jean@monclub.fr" required inputmode="email" autocomplete="email">
+          </div>
+          <div class="field">
+            <label class="fl" for="ref-tel">Mobile<span class="req">*</span></label>
+            <input id="ref-tel" type="tel" placeholder="06 00 00 00 00" required inputmode="tel" autocomplete="tel">
+          </div>
+        </div>
+        <div class="sub-div"></div>
+        <div class="sub-label">Responsable Mairie / Commune</div>
+        <div class="field-row">
+          <div class="field">
+            <label class="fl" for="maire-nom">Nom et prénom<span class="req">*</span></label>
+            <input id="maire-nom" type="text" placeholder="Ex : Marie Martin" required>
+          </div>
+          <div class="field">
+            <label class="fl" for="maire-tel">Mobile<span class="req">*</span></label>
+            <input id="maire-tel" type="tel" placeholder="06 00 00 00 00" required inputmode="tel">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">③ Photo des installations</div>
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <span class="card-title">Photo</span>
+        <span class="card-step">3 / 3</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--t2);margin-bottom:1rem;line-height:1.5">Joignez une photo de vos installations (terrain, douches, vestiaires) pour accélérer l'examen de votre dossier.</p>
+        <div class="photo-zone" id="photoZone" onclick="document.getElementById('fileGal').click()">
+          <div class="photo-placeholder" id="photoPH">
+            <div class="ph-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            <div><div class="ph-title">Ajouter une photo</div><div class="ph-sub">JPG, PNG, HEIC · max 10 Mo</div></div>
+            <div class="cta-row" onclick="event.stopPropagation()">
+              <button type="button" class="pbtn pbtn-cam" onclick="document.getElementById('fileCam').click()">
+                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Appareil photo
+              </button>
+              <button type="button" class="pbtn pbtn-gal" onclick="document.getElementById('fileGal').click()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Galerie
+              </button>
+            </div>
+          </div>
+          <div class="photo-preview" id="photoPrev">
+            <img id="photoImg" src="" alt="Aperçu">
+            <div class="prev-overlay"></div>
+            <div class="prev-actions" onclick="event.stopPropagation()">
+              <button type="button" class="pact" title="Changer" onclick="document.getElementById('fileGal').click()">
+                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+              <button type="button" class="pact" title="Supprimer" onclick="removePhoto()">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="field-hint">Optionnel — fortement recommandé pour accélérer le traitement.</p>
+        <input type="file" id="fileCam" accept="image/*" capture="environment">
+        <input type="file" id="fileGal" accept="image/*">
+      </div>
+    </div>
+
+    <div class="consent-wrap">
+      <input type="checkbox" id="rgpd" required>
+      <label class="consent-text" for="rgpd">
+        En soumettant ce formulaire, j'accepte que les données soient transmises à la <strong>Ligue du Grand Est de Football</strong> et à <strong>ESCATES</strong> dans le cadre de HydroMatch, conformément au RGPD.<span class="req"> *</span>
+      </label>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Envoyer mon inscription
+      </button>
+      <p class="submit-note">Champs <span>*</span> obligatoires · Réservé aux clubs affiliés Ligue Grand Est</p>
+    </div>
+
+  </form>
+
+  <div class="footer">
+    <p class="footer-url">calendrier.lgef.fr/hydromatch</p>
+    <p style="margin-top:5px">Une initiative <strong>Ligue Grand Est de Football × ESCATES</strong> · 2025–2026</p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Supabase ───────────────────────────────────────────────
+const SUPABASE_URL = 'https://ofyxybcxvhqwkemskldl.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9meXh5YmN4dmhxd2tlbXNrbGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NzY4OTcsImV4cCI6MjA2NzE1Mjg5N30.m9zDhA0QreRlLsjPXtx7NxVKxDpwpozG2h5oJiXlzv0';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ─── Toast ──────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ─── Photo ──────────────────────────────────────────────────
+let photoFile = null;
+
+function handleFile(f) {
+  if (!f || !f.type.startsWith('image/')) return;
+  if (f.size > 10 * 1024 * 1024) { showToast('Photo trop lourde (max 10 Mo)', 'error'); return; }
+  photoFile = f;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('photoImg').src = e.target.result;
+    document.getElementById('photoPH').style.display = 'none';
+    document.getElementById('photoPrev').style.display = 'block';
+    const z = document.getElementById('photoZone');
+    z.classList.add('has-image'); z.style.cursor = 'default';
+    updateStepper();
+  };
+  r.readAsDataURL(f);
+}
+
+function removePhoto() {
+  photoFile = null;
+  document.getElementById('photoImg').src = '';
+  document.getElementById('photoPH').style.display = '';
+  document.getElementById('photoPrev').style.display = 'none';
+  const z = document.getElementById('photoZone');
+  z.classList.remove('has-image'); z.style.cursor = 'pointer';
+  document.getElementById('fileCam').value = '';
+  document.getElementById('fileGal').value = '';
+  updateStepper();
+}
+
+document.getElementById('fileCam').addEventListener('change', function() { if (this.files[0]) handleFile(this.files[0]); });
+document.getElementById('fileGal').addEventListener('change', function() { if (this.files[0]) handleFile(this.files[0]); });
+
+const pz = document.getElementById('photoZone');
+pz.addEventListener('dragover', e => { e.preventDefault(); pz.style.borderColor = 'var(--navy-mid)'; });
+pz.addEventListener('dragleave', () => { if (!pz.classList.contains('has-image')) pz.style.borderColor = ''; });
+pz.addEventListener('drop', e => { e.preventDefault(); pz.style.borderColor = ''; if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+// ─── Stepper ────────────────────────────────────────────────
+function checkFilled(ids) { return ids.some(id => { const el = document.getElementById(id); return el && el.value.trim() !== ''; }); }
+
+function updateStepper() {
+  const s1 = checkFilled(['club-nom','affiliation','district']);
+  const s2 = checkFilled(['ref-nom','ref-email','ref-tel','maire-nom','maire-tel']);
+  const s3 = !!photoFile;
+  const set = (id, done, active) => {
+    const el = document.getElementById(id);
+    el.classList.toggle('done', done);
+    el.classList.toggle('active', active && !done);
+    if (done) el.querySelector('.fstep-dot').innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    else el.querySelector('.fstep-dot').textContent = id.replace('fs', '');
+  };
+  set('fs1', s1, true);
+  set('fs2', s2, s1);
+  set('fs3', s3, s2);
+}
+document.querySelectorAll('input,select').forEach(el => el.addEventListener('input', updateStepper));
+updateStepper();
+
+// ─── Validation ─────────────────────────────────────────────
+function validate() {
+  const required = ['club-nom','affiliation','district','ref-nom','ref-email','ref-tel','maire-nom','maire-tel'];
+  let ok = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { el.classList.add('error'); ok = false; }
+    else el.classList.remove('error');
+  });
+  if (!document.getElementById('rgpd').checked) {
+    showToast('Veuillez accepter les conditions RGPD', 'error');
+    ok = false;
+  }
+  return ok;
+}
+
+// ─── Submit ─────────────────────────────────────────────────
+document.getElementById('mainForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!validate()) { showToast('Veuillez remplir tous les champs obligatoires', 'error'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Envoi en cours...';
+
+  try {
+    // 1. Upload photo si présente
+    let photo_url = null;
+    if (photoFile) {
+      const ext = photoFile.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { data: uploadData, error: uploadError } = await sb.storage
+        .from('hydromatch-photos')
+        .upload(fileName, photoFile, { contentType: photoFile.type });
+      if (uploadError) throw uploadError;
+      const { data: urlData } = sb.storage.from('hydromatch-photos').getPublicUrl(fileName);
+      photo_url = urlData.publicUrl;
+    }
+
+    // 2. Insérer dans la table
+    const { error: insertError } = await sb
+      .from('hydromatch_inscriptions')
+      .insert({
+        club_nom: document.getElementById('club-nom').value.trim(),
+        affiliation: document.getElementById('affiliation').value.trim(),
+        district: document.getElementById('district').value,
+        ref_nom: document.getElementById('ref-nom').value.trim(),
+        ref_email: document.getElementById('ref-email').value.trim(),
+        ref_tel: document.getElementById('ref-tel').value.trim(),
+        maire_nom: document.getElementById('maire-nom').value.trim(),
+        maire_tel: document.getElementById('maire-tel').value.trim(),
+        photo_url
+      });
+
+    if (insertError) throw insertError;
+
+    // 3. Succès
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'flex';
+    document.getElementById('stepper').style.display = 'none';
+    document.querySelectorAll('.section-label').forEach(el => el.style.display = 'none');
+    window.scrollTo({ top: document.getElementById('inscription').offsetTop - 20, behavior: 'smooth' });
+
+  } catch (err) {
+    console.error(err);
+    showToast('Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Envoyer mon inscription';
+  }
+});
+
+// ─── Hero video ─────────────────────────────────────────────
+function playHero() {
+  const url = 'VIDEO_URL'; // ← Remplacer par l'URL embed YouTube ex: https://www.youtube.com/embed/XXXX?autoplay=1
+  if (url === 'VIDEO_URL') { showToast('Ajoutez l\'URL embed vidéo (variable VIDEO_URL)', 'error'); return; }
+  document.getElementById('heroPH').style.display = 'none';
+  const iframe = document.getElementById('heroIframe');
+  iframe.src = url; iframe.style.display = 'block';
+}
+
+// ─── Smooth scroll ───────────────────────────────────────────
+document.querySelector('.money-cta a').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('inscription').scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
